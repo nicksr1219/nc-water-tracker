@@ -7,6 +7,8 @@ No installs needed - only uses Python's built-in libraries.
 """
 
 import json
+import time
+import urllib.error
 import urllib.request
 import urllib.parse
 from datetime import datetime, timedelta, timezone
@@ -101,9 +103,36 @@ DUKE_DETAILS_BASE = "https://lakes.hydro-derived.duke-energy.app/details"
 # operating range (see data/full_pool_reference.json) for percent-of-full.
 
 
+RETRYABLE_HTTP_CODES = {429, 500, 502, 503, 504}
+
+
+def urlopen_with_retry(url_or_request, timeout=30, max_attempts=3):
+    """Wraps urllib.request.urlopen with a few retries for transient failures
+    (server hiccups, momentary outages) - this now runs unattended every few
+    hours in CI, so a single flaky request shouldn't crash the whole run.
+    Client errors (bad URL, 404, etc.) fail immediately since retrying won't
+    help.
+    """
+    last_error = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return urllib.request.urlopen(url_or_request, timeout=timeout)
+        except urllib.error.HTTPError as e:
+            if e.code not in RETRYABLE_HTTP_CODES or attempt == max_attempts:
+                raise
+            last_error = e
+        except urllib.error.URLError as e:
+            if attempt == max_attempts:
+                raise
+            last_error = e
+        wait_seconds = 2 ** attempt  # 2s, 4s, 8s
+        print(f"  ({last_error} - retrying in {wait_seconds}s, attempt {attempt}/{max_attempts})")
+        time.sleep(wait_seconds)
+
+
 def api_get(path, params):
     url = f"{API_BASE}/{path}?{urllib.parse.urlencode(params)}&f=json"
-    with urllib.request.urlopen(url, timeout=30) as response:
+    with urlopen_with_retry(url) as response:
         return json.load(response)
 
 
@@ -168,7 +197,7 @@ def fetch_daily_percentiles(site_number, parameter_code):
     """
     url = (f"https://waterservices.usgs.gov/nwis/stat/?format=rdb&sites={site_number}"
            f"&statReportType=daily&statTypeCd=all&parameterCd={parameter_code}")
-    with urllib.request.urlopen(url, timeout=30) as response:
+    with urlopen_with_retry(url) as response:
         text = response.read().decode("utf-8")
 
     lines = [line for line in text.splitlines() if line and not line.startswith("#")]
@@ -357,7 +386,7 @@ def compute_precip_percent_normal(site_number):
         "elems": [{"name": "pcpn", "normal": "1"}, {"name": "pcpn"}],
     }).encode("utf-8")
     req = urllib.request.Request(f"{ACIS_BASE}/StnData", data=body, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=30) as response:
+    with urlopen_with_retry(req) as response:
         result = json.load(response)
 
     actual_sum = 0.0
@@ -510,7 +539,7 @@ def load_duke_coordinates():
 
 def fetch_duke_lakes():
     req = urllib.request.Request(f"{DUKE_API_BASE}/lakes/current-level", headers={"Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=30) as response:
+    with urlopen_with_retry(req) as response:
         return json.load(response)
 
 
