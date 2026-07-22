@@ -1,0 +1,37 @@
+{
+  "NORMAN": {"lat": 35.4348585, "lon": -80.9581306, "in_nc": "yes", "source": "USGS monitoring-locations (site 02142647)"},
+  "MTNISLAND": {"lat": 35.3343049, "lon": -80.9864634, "in_nc": "yes", "source": "USGS monitoring-locations (site 02142676)"},
+  "JAMES": {"lat": 35.7434604, "lon": -81.8392687, "in_nc": "yes", "source": "USGS monitoring-locations (site 02138519)"},
+  "RHODHISS": {"lat": 35.7731872, "lon": -81.4412014, "in_nc": "yes", "source": "USGS monitoring-locations (site 02141490)"},
+  "HICKORY": {"lat": 35.8223546, "lon": -81.1931382, "in_nc": "yes", "source": "USGS monitoring-locations (site 02141961)"},
+  "TILLERY": {"lat": 35.227778, "lon": -80.083333, "in_nc": "yes", "source": "USGS/Water Quality Portal (dam)"},
+
+  "LOOKOUT": {"lat": 35.757356, "lon": -81.090357, "in_nc": "yes", "source": "Dam coordinate, damsoftheworld.com / USGS"},
+  "WYLIE": {"lat": 35.099105, "lon": -81.043521, "in_nc": "partial", "source": "GNIS point on the NC side (Mecklenburg/Gaston Co.); the dam itself is in York Co., SC", "notes": "Lake Wylie spans the NC/SC line - this point is on the NC portion, not the dam."},
+  "NANTAHALA": {"lat": 35.19944, "lon": -83.65222, "in_nc": "yes", "source": "Wikipedia/GNIS"},
+  "QUEENSCRK": {"lat": 35.277598, "lon": -83.653146, "in_nc": "yes", "source": "GNIS/TopoZone"},
+  "TANASEE": {"lat": 35.212533, "lon": -82.994708, "in_nc": "yes", "source": "GNIS via HometownLocator"},
+  "WOLFCRK": {"lat": 35.227468, "lon": -82.994383, "in_nc": "yes", "source": "GNIS/TopoZone"},
+  "BEARCREEK": {"lat": 35.235629, "lon": -83.053575, "in_nc": "yes", "source": "GNIS/TopoZone"},
+  "CEDARCLIFF": {"lat": 35.254167, "lon": -83.098611, "in_nc": "yes", "source": "USGS gauge near dam (site 03507289)"},
+  "THORPE": {"lat": 35.19611, "lon": -83.15306, "in_nc": "yes", "source": "Wikipedia (Lake Glenville)"},
+  "BLEWETT": {"lat": 34.967098, "lon": -79.879780, "in_nc": "yes", "source": "Wikipedia (dam coordinates)"},
+  "BELEWS": {"lat": 36.2990, "lon": -80.0375, "in_nc": "yes", "source": "Wikipedia"},
+  "HARRIS": {"lat": 35.62357, "lon": -78.917283, "in_nc": "yes", "source": "Wikipedia"},
+  "JULIAN": {"lat": 35.475170, "lon": -82.537039, "in_nc": "yes", "source": "TopoZone/GNIS"},
+  "MAYO": {"lat": 36.52528, "lon": -78.86722, "in_nc": "yes", "source": "Wikipedia"},
+  "SUTTON": {"lat": 34.301589, "lon": -78.002537, "in_nc": "yes", "source": "TopoZone/GNIS"},
+  "WALTERS": {"lat": 35.695, "lon": -83.050, "in_nc": "yes", "source": "USGS/Water Quality Portal (Walters Dam)"},
+
+  "FISHINGCRK": {"lat": null, "lon": null, "in_nc": "no", "source": "Wikipedia - wholly in Lancaster/Chester Co., SC"},
+  "DEARBORN": {"lat": null, "lon": null, "in_nc": "no", "source": "Duke Energy illumination article - wholly in Chester Co., SC (this is Great Falls Reservoir)"},
+  "CEDARCREEK": {"lat": null, "lon": null, "in_nc": "no", "source": "Duke Energy Catawba-Wateree recreation materials - wholly in Chester Co., SC"},
+  "WATEREE": {"lat": null, "lon": null, "in_nc": "no", "source": "Wikipedia - wholly in Kershaw/Fairfield/Lancaster Co., SC"},
+  "99ISLAND": {"lat": null, "lon": null, "in_nc": "no", "source": "Wikipedia (Broad River) / SC GNIS - wholly in Cherokee Co., SC, does not back up into NC"},
+  "BADCREEK": {"lat": null, "lon": null, "in_nc": "no", "source": "Wikipedia - wholly in Oconee Co., SC"},
+  "JOCASSEE": {"lat": null, "lon": null, "in_nc": "no", "source": "Wikipedia - wholly in Oconee/Pickens Co., SC"},
+  "KEOWEE": {"lat": null, "lon": null, "in_nc": "no", "source": "Wikipedia - wholly in Oconee Co., SC"},
+  "ROBINSON": {"lat": null, "lon": null, "in_nc": "no", "source": "Duke Energy's own site (duke-energy.com/community/lakes/services/lake-robinson-guidelines) confirms this is the H.B. Robinson Nuclear Plant cooling lake near Hartsville, Darlington/Chesterfield Co., SC - not a NC lake despite the generic name."},
+
+  "TUCKASEGEE": {"lat": null, "lon": null, "in_nc": "unknown", "source": "Confirmed to exist and be in NC (small ~7.9-acre reservoir on West Fork Tuckasegee River, Jackson Co., per Duke's FERC P-2686 licensing docs) but no confidently-sourced precise coordinate found. Needs a NID or FERC exhibit-map lookup before including."}
+}

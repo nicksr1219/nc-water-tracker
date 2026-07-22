@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NC Water Table & Reservoir Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+  :root {
+    --deep-water: #0d3b4f;
+    --river-blue: #1b6b8c;
+    --clay: #b6532c;
+    --limestone: #f2ede3;
+    --moss: #4a6b4d;
+    --ink: #1a2422;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--limestone);
+    color: var(--ink);
+  }
+  header {
+    background: var(--deep-water);
+    color: var(--limestone);
+    padding: 22px 28px 18px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  header h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.5rem;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+  header .subtitle {
+    font-size: 0.85rem;
+    color: #a9c7d3;
+    max-width: 480px;
+  }
+  #layout {
+    display: flex;
+    height: calc(100vh - 78px);
+    min-height: 500px;
+  }
+  #map {
+    flex: 1;
+    height: 100%;
+  }
+  #panel {
+    width: 300px;
+    background: white;
+    border-left: 3px solid var(--deep-water);
+    padding: 20px;
+    overflow-y: auto;
+  }
+  #panel h2 {
+    font-size: 1.05rem;
+    margin: 0 0 4px;
+    color: var(--deep-water);
+  }
+  #panel .station-type {
+    display: inline-block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+  .type-groundwater { background: #d7e8ee; color: var(--river-blue); }
+  .type-reservoir { background: #f0ded2; color: var(--clay); }
+  #panel .reading {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 8px 0 2px;
+  }
+  #panel .reading-label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 16px;
+  }
+  .gauge-block { margin: 14px 0; }
+  .gauge-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+  }
+  .gauge-track {
+    height: 8px;
+    background: #e8e4da;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .gauge-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  .context-block {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: #333;
+    background: #eef4f0;
+    border-left: 3px solid var(--moss);
+    padding: 10px 12px;
+    margin: 14px 0;
+  }
+  .context-block strong {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--moss);
+    margin-bottom: 4px;
+  }
+  .elevation-note {
+    font-size: 0.78rem;
+    color: #666;
+    line-height: 1.5;
+    background: #f7f4ec;
+    border-left: 3px solid #ccc;
+    padding: 8px 10px;
+    margin: 14px 0;
+  }
+  #panel .meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+  }
+  #panel a.usgs-link {
+    display: inline-block;
+    margin-top: 18px;
+    font-size: 0.85rem;
+    color: white;
+    background: var(--river-blue);
+    padding: 8px 14px;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+  #panel a.usgs-link:hover { background: var(--deep-water); }
+  #panel .empty-state {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-top: 20px;
+  }
+  #legend {
+    position: absolute;
+    bottom: 24px;
+    left: 12px;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 6px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+    font-size: 0.8rem;
+    z-index: 500;
+  }
+  #legend div { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+  #legend .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .demo-banner {
+    background: #fff4e5;
+    border-bottom: 1px solid #f0d9a8;
+    color: #7a5b1e;
+    font-size: 0.78rem;
+    padding: 6px 28px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>NC Water Table &amp; Reservoir Tracker</h1>
+    <div class="subtitle">Groundwater and reservoir levels across North Carolina — click a station for details.</div>
+  </div>
+</header>
+<div class="demo-banner">V1 demo — showing sample station data. Live USGS data feed comes next.</div>
+
+<div id="layout">
+  <div id="map"></div>
+  <div id="panel">
+    <div id="panel-content">
+      <div class="empty-state">Click any point on the map to see that station's current water level, reading date, and a link to its full USGS record.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const stations = [
+    { id: "02087500", name: "Neuse River near Clayton", type: "reservoir", lat: 35.6440, lng: -78.4400, reading: "8.42 ft", label: "Gauge height", date: "2026-07-20 06:15", percentFull: 81, percentNormal: 94, context: "Illustrative placeholder — not yet connected to live drought/context data." },
+    { id: "GW-WAKE-014", name: "Wake County Groundwater Well 14", type: "groundwater", lat: 35.7796, lng: -78.6382, reading: "22.7 ft below surface", label: "Depth to water", date: "2026-07-19 22:00", percentNormal: 89, context: "Illustrative placeholder — not yet connected to live drought/context data." },
+    { id: "0208250410", name: "Falls Lake near Raleigh", type: "reservoir", lat: 36.0000, lng: -78.6800, reading: "246.19 ft", label: "Reservoir elevation", date: "2026-07-13", percentFull: 62, percentNormal: 78, context: "Wake County is currently classified in extreme drought, one of 41 NC counties at that level. The drought began in late summer 2025 and 2026 is on pace to be the county's 2nd driest year to date in 132 years of record-keeping. Recent thunderstorms added about a foot to Falls Lake, but the lake remained roughly 10 feet lower than its level at this time in July 2025. Raleigh has moved toward Stage Two water restrictions as a result. (Source: NC Drought Management Advisory Council, WRAL, Drought.gov — accurate as of mid-July 2026.)" },
+    { id: "02096846", name: "Jordan Lake near Apex", type: "reservoir", lat: 35.7357, lng: -79.0043, reading: "216.8 ft", label: "Reservoir elevation", date: "2026-07-20 06:00", percentFull: 88, percentNormal: 97, context: "Illustrative placeholder — not yet connected to live drought/context data." },
+    { id: "GW-DURH-002", name: "Durham County Groundwater Well 2", type: "groundwater", lat: 35.9940, lng: -78.8986, reading: "14.3 ft below surface", label: "Depth to water", date: "2026-07-19 21:30", percentNormal: 103, context: "Illustrative placeholder — not yet connected to live drought/context data." },
+    { id: "02146470", name: "Lake Norman near Cornelius", type: "reservoir", lat: 35.4874, lng: -80.8656, reading: "97.9 ft", label: "Reservoir elevation", date: "2026-07-20 06:30", percentFull: 73, percentNormal: 85, context: "Illustrative placeholder — not yet connected to live drought/context data." },
+    { id: "GW-BUNC-007", name: "Buncombe County Groundwater Well 7", type: "groundwater", lat: 35.5951, lng: -82.5515, reading: "9.8 ft below surface", label: "Depth to water", date: "2026-07-19 20:45", percentNormal: 92, context: "Illustrative placeholder — not yet connected to live drought/context data." },
+    { id: "02087570", name: "Kerr Lake near Henderson", type: "reservoir", lat: 36.5473, lng: -78.4028, reading: "298.1 ft", label: "Reservoir elevation", date: "2026-07-20 05:15", percentFull: 91, percentNormal: 99, context: "Illustrative placeholder — not yet connected to live drought/context data." },
+    { id: "GW-NHAN-003", name: "New Hanover County Groundwater Well 3", type: "groundwater", lat: 34.2257, lng: -77.9447, reading: "6.1 ft below surface", label: "Depth to water", date: "2026-07-19 23:10", percentNormal: 78, context: "Illustrative placeholder — not yet connected to live drought/context data." },
+    { id: "02105769", name: "Lake Wylie near Charlotte", type: "reservoir", lat: 35.1085, lng: -81.0631, reading: "102.2 ft", label: "Reservoir elevation", date: "2026-07-20 06:20", percentFull: 68, percentNormal: 80, context: "Illustrative placeholder — not yet connected to live drought/context data." }
+  ];
+
+  const map = L.map('map', { zoomControl: true }).setView([35.55, -79.4], 7);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 15,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const colors = { groundwater: '#1b6b8c', reservoir: '#b6532c' };
+
+  stations.forEach(function(s) {
+    const marker = L.circleMarker([s.lat, s.lng], {
+      radius: 8,
+      fillColor: colors[s.type],
+      color: '#ffffff',
+      weight: 2,
+      fillOpacity: 0.9
+    }).addTo(map);
+
+    marker.on('click', function() {
+      showStation(s);
+    });
+    marker.bindTooltip(s.name, { direction: 'top', offset: [0, -6] });
+  });
+
+  function statusColor(pct) {
+    if (pct >= 95) return '#2f7d4f';   // healthy green
+    if (pct >= 80) return '#4a6b4d';   // moss, still fine
+    if (pct >= 60) return '#c98a1f';   // amber, watch
+    return '#b6532c';                  // clay, low
+  }
+
+  function statusWord(pct) {
+    if (pct >= 95) return 'Normal';
+    if (pct >= 80) return 'Slightly below normal';
+    if (pct >= 60) return 'Below normal';
+    return 'Well below normal';
+  }
+
+  function gaugeRow(label, pct) {
+    if (pct === undefined) return '';
+    const color = statusColor(pct);
+    return `
+      <div class="gauge-block">
+        <div class="gauge-label-row"><span>${label}</span><span style="color:${color}; font-weight:600;">${pct}%</span></div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:${Math.min(pct,100)}%; background:${color};"></div></div>
+      </div>
+    `;
+  }
+
+  function showStation(s) {
+    const typeLabel = s.type === 'groundwater' ? 'Groundwater Well' : 'Reservoir / Lake';
+    const typeClass = s.type === 'groundwater' ? 'type-groundwater' : 'type-reservoir';
+    const referencePct = s.percentFull !== undefined ? s.percentFull : s.percentNormal;
+    const statusText = statusWord(referencePct);
+    const elevationNote = s.type === 'reservoir'
+      ? `<div class="elevation-note">"${s.reading}" is the water surface's height above sea level — on its own it doesn't tell you how full the reservoir is. The gauges below translate that into something meaningful.</div>`
+      : `<div class="elevation-note">"${s.reading}" is how far below the surface the water sits in this well. The gauge below compares that to the typical depth for this time of year.</div>`;
+
+    document.getElementById('panel-content').innerHTML = `
+      <span class="station-type ${typeClass}">${typeLabel}</span>
+      <h2>${s.name}</h2>
+      <div class="reading">${s.reading}</div>
+      <div class="reading-label">${s.label} · ${statusText}</div>
+      ${gaugeRow('Percent of full pool', s.percentFull)}
+      ${gaugeRow('Percent of normal for this date', s.percentNormal)}
+      ${elevationNote}
+      <div class="context-block"><strong>Background</strong><br>${s.context}</div>
+      <div class="meta-row"><span>Station ID</span><span>${s.id}</span></div>
+      <div class="meta-row"><span>Last reading</span><span>${s.date}</span></div>
+      <a class="usgs-link" href="https://waterdata.usgs.gov/nwis/uv?site_no=${encodeURIComponent(s.id)}" target="_blank" rel="noopener">View full USGS record →</a>
+    `;
+  }
+
+  const legend = L.control({ position: 'bottomleft' });
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', '');
+    div.id = 'legend';
+    div.innerHTML = `
+      <div><span class="dot" style="background:${colors.groundwater}"></span> Groundwater well</div>
+      <div><span class="dot" style="background:${colors.reservoir}"></span> Reservoir / lake</div>
+    `;
+    return div;
+  };
+  legend.addTo(map);
+</script>
+
+</body>
+</html>

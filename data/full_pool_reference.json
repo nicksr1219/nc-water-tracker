@@ -1,0 +1,52 @@
+{
+  "02111391": {
+    "full_pool_ft": 1030.0,
+    "min_pool_ft": 1000.0,
+    "datum": "NGVD29",
+    "source": "USACE Wilmington District, W. Kerr Scott Reservoir project description",
+    "source_url": "https://epec.saw.usace.army.mil/wksdesc.txt",
+    "confidence": "HIGH",
+    "min_pool_source": "USACE Wilmington District, W. Kerr Scott Dam and Reservoir Master Plan (Jan 2012): 'Water supply storage consists of 33,000 acre-feet between the elevations of 1,000 and 1,030 msl.'",
+    "notes": "Source states 'normal pool elevation of 1030 feet, msl' - datum recorded here as NGVD29, the standard historical sea-level reference for USACE projects of this era, though the source doesn't use that exact label."
+  },
+  "0208725090": {
+    "full_pool_ft": 276.0,
+    "datum": "NAVD88",
+    "source": "NC DEQ Dam Safety Program dam inventory (Lake Crabtree Dam / Crabtree Creek WS Dam #23, NID NC04952)",
+    "confidence": "MEDIUM",
+    "notes": "Datum uncertain: inventory doesn't label it explicitly. Initially inferred as NAVD88 from proximity to live readings, but this is a small lake where a ~1 ft NGVD29/NAVD88 difference matters a lot and dam inventories of this era more often use NGVD29 - treat the full-pool percentage for this one with extra caution. No minimum-pool elevation found; this appears to be a flood-control/sediment structure without a published operating range, so only the sea-level-ratio approximation is available here, not the more accurate usable-range calculation."
+  },
+  "02098197": {
+    "full_pool_ft": 216.0,
+    "min_pool_ft": 202.0,
+    "datum": "NGVD29",
+    "source": "USACE Wilmington District",
+    "source_url": "https://www.saw.usace.army.mil/Missions/Recreation/Lake-Levels/Jordan-Lake/",
+    "confidence": "HIGH",
+    "min_pool_source": "USACE Wilmington District, B. Everett Jordan Dam and Lake Drought Contingency Plan (May 2008), Table 4 'Storage Allocation': 'Bottom of conservation pool ... 202 ft'; 'the conservation pool (202-216 ft, MSL) of Jordan Lake.'"
+  },
+  "02087182": {
+    "full_pool_ft": 251.5,
+    "min_pool_ft": 236.5,
+    "datum": "NGVD29",
+    "source": "USACE Wilmington District Falls Lake Water Control Plan (hosted by NC DEQ): conservation storage between elevations 251.5 and 236.5 ft NGVD29",
+    "confidence": "HIGH",
+    "min_pool_source": "Same source: 'Conservation storage between elevations 251.5 and 236.5 feet-NGVD29 is reserved for water supply as well as low flow and water quality control.'"
+  },
+  "02077280": {
+    "full_pool_ft": 410.5,
+    "min_pool_ft": 406.0,
+    "datum": "NGVD29",
+    "source": "Duke Energy live lake-operating data (api.hydro-derived.duke-energy.app), which operates Hyco Lake directly",
+    "confidence": "HIGH",
+    "notes": "Superseded 2026-07-22: previously used a 1970s USGS Water-Data Report figure (409.76/399.76 ft), but Duke Energy's own current operating range disagrees meaningfully (their minimum is 406 ft, well above the old USGS-derived 399.76 ft) and is the more authoritative, current source since Duke operates this lake. We still pull the live elevation *reading* from USGS (updates every 15-30 min) rather than Duke's feed for this specific lake, since Duke's own reported reading for Hyco/Hyco Afterbay lags by weeks - only the full-pool/minimum reference numbers come from Duke here."
+  },
+  "0207730290": {
+    "full_pool_ft": 399.0,
+    "min_pool_ft": 375.0,
+    "datum": "NGVD29",
+    "source": "Duke Energy live lake-operating data (api.hydro-derived.duke-energy.app), which operates the Roxboro Afterbay Reservoir directly",
+    "confidence": "HIGH",
+    "notes": "Superseded 2026-07-22: previously used a 1970s USGS Water-Data Report figure (385 ft, no minimum found). Duke Energy's own current operating range (375-399 ft) is more authoritative since Duke operates this reservoir, and reveals something the old data couldn't: current live readings (~368 ft, from both USGS and Duke) sit *below* Duke's own stated minimum operating elevation - a genuinely severe/unusual drought condition worth surfacing, not a data error (cross-checked against Duke's own separately-reported reading, which is close to USGS's)."
+  }
+}
